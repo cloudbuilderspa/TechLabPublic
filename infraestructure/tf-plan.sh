@@ -11,6 +11,8 @@ ACTION=$3
 # }
 
 function terraform_plan() {
+  pwd
+  ls -l
   cd ${ENV}/${RESOURCE_PATH} && terraform init && terraform ${ACTION} 
 }
 
