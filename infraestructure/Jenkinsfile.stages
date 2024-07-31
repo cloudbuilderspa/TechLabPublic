@@ -1,0 +1,34 @@
+// AWS
+OBJ2_AWS_ACCESS_KEY_ID=""
+OBJ2_AWS_SECRET_ACCESS_KEY=""
+OBJ2_AWS_STAGE="dev"
+OBJ2_AWS_REGION="us-east-1"
+
+def getName() {
+  return "INFRAESTRUCTURE"
+}
+
+def getFolderName() {
+  return "infraestructure"
+}
+
+def getVersionHash() {
+  return OBJ2_VERSION_HASH
+}
+
+def isEnableTest() {
+  return true
+}
+
+def terraformPlan(ENVIRONMENT) {
+  println("====  - Terraform Plan ====")
+  sh "./tf-plan.sh \"${ENVIRONMENT}\" \"${params.RESOURCE_PATH}\" \"${params.ACTION}\""
+}
+
+def terraformApply(ENVIRONMENT) {
+  println("==== Terraform Apply ====")
+  sh "./tf-apply.sh \"${ENVIRONMENT}\" \"${params.RESOURCE_PATH}\" \"${params.ACTION}\""
+}
+
+
+return this
