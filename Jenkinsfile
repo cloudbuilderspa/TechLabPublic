@@ -140,7 +140,7 @@ pipeline { //pipeline
             script {
               dir(jenkinsfileStagesInfraestructure.getFolderName()) {
                 def sufix = ENVIRONMENT == 'qa' ? 'cert' : ENVIRONMENT;
-                withAWS(credentials: "  }", region: "${AWS_DEFAULT_REGION}") {
+                withAWS(credentials: "techlab_aws_${sufix}", region: "${AWS_DEFAULT_REGION}") {
                 jenkinsfileStagesInfraestructure.terraformApply(ENVIRONMENT)
                 }              
               } //dir end
