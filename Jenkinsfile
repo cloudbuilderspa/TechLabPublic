@@ -82,16 +82,16 @@ pipeline { //pipeline
         }
       }
     }
-    stage('CHMOD'){
-    steps{
-      script{
-        dir(infraestructure){
-        sh 'chmod +x tf-apply.sh'
-        sh 'chmod +x tf-plan.sh'
-        }
-      }
-    }
-    }
+    // stage('CHMOD'){
+    // steps{
+    //   script{
+    //     dir(infraestructure){
+    //     sh 'chmod +x tf-apply.sh'
+    //     sh 'chmod +x tf-plan.sh'
+    //     }
+    //   }
+    // }
+    // }
 
       // stage('DB AWS ENV') {
       //   steps{
