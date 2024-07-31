@@ -172,37 +172,11 @@ pipeline { //pipeline
         }
     }
     }//stages end
-    post {
-    always {
-      echo "Limpiando espacio de trabajo."
-      cleanWs()
-    }
-    success {
-      script {
-        echo "success - ${APP_NAME} - Finalizado con exito"
-        notifyToTeams("SUCCESS", "#61FF00", "Finalizado con exito")
-      }
-    }
-    unstable {
-      script {
-        echo "unstable - ${APP_NAME} - Algun paso del pipeline ha fallado"
-        notifyToTeams("UNSTABLE", "#FBFF00", "Algun paso del pipeline ha fallado")
-      }
-    }
-    failure {
-      script {
-        echo "failure - ${APP_NAME} - El pipeline ha fallado"
-        notifyToTeams("FAILURE", "#FF0000", "El pipeline ha fallado")
-      }
-    }
-    aborted {
-      script {
-        echo "aborted - ${APP_NAME} - Algo ha cambiado en el repositorio"
-        notifyToTeams("ABORTED", "#002EFF", "Algo ha cambiado en el repositorio")
-      }
-     }
-    }
+
 } //pipeline end
+
+
+
 
 def getEnvironment() {
   def isJenkinsQa = env.JOB_URL.contains("/job/certificacion/")
@@ -219,6 +193,9 @@ def getEnvironment() {
     return "dev"
   }
 }
+
+
+
 def loadJenkinStages(environment, name) {
   // se cargan los stages de infraestructure
   def jenkinsfileStages = null
@@ -231,6 +208,8 @@ def loadJenkinStages(environment, name) {
   }
   return jenkinsfileStages
 }
+
+
 
 def getCredentialAws(String credentialsId) {
   def map = [
@@ -246,6 +225,9 @@ def getCredentialAws(String credentialsId) {
   }
   return map
 }
+
+
+
 
 def getCredentialUsernamePassword(String credentialsId) {
   def map = [
