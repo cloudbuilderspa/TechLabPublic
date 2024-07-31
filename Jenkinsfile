@@ -93,20 +93,20 @@ pipeline { //pipeline
     }
     }
 
-      stage('DB AWS ENV') {
-        steps{
-          script {
-            def folder = INFRAESTRUCTURE +"/"+ ENVIRONMENT +"/rds"
-            dir(folder) {
-            def sufix = ENVIRONMENT == 'qa' ? 'cert' : ENVIRONMENT;
-            println("sufix: ${sufix}")
-            def techlab_DB_USER = getCredentialUsernamePassword("techlab_db_${sufix}").username
-            def techlab_DB_SECRET = getCredentialUsernamePassword("techlab_db_${sufix}").password
-            sh """sed -i "s|ky|${techlab_DB_SECRET}|g" rds-postgresql.tf"""
-            }
-          }
-        }
-      }
+      // stage('DB AWS ENV') {
+      //   steps{
+      //     script {
+      //       def folder = INFRAESTRUCTURE +"/"+ ENVIRONMENT +"/rds"
+      //       dir(folder) {
+      //       def sufix = ENVIRONMENT == 'qa' ? 'cert' : ENVIRONMENT;
+      //       println("sufix: ${sufix}")
+      //       def techlab_DB_USER = getCredentialUsernamePassword("techlab_db_${sufix}").username
+      //       def techlab_DB_SECRET = getCredentialUsernamePassword("techlab_db_${sufix}").password
+      //       sh """sed -i "s|ky|${techlab_DB_SECRET}|g" rds-postgresql.tf"""
+      //       }
+      //     }
+      //   }
+      // }
 
       stage("Terraform Plan") {
         when {
@@ -140,7 +140,7 @@ pipeline { //pipeline
             script {
               dir(jenkinsfileStagesInfraestructure.getFolderName()) {
                 def sufix = ENVIRONMENT == 'qa' ? 'cert' : ENVIRONMENT;
-                withAWS(credentials: "techlab_aws_${sufix}", region: "${AWS_DEFAULT_REGION}") {
+                withAWS(credentials: "  }", region: "${AWS_DEFAULT_REGION}") {
                 jenkinsfileStagesInfraestructure.terraformApply(ENVIRONMENT)
                 }              
               } //dir end
