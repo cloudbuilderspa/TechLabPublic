@@ -22,11 +22,13 @@ def isEnableTest() {
 
 def terraformPlan(ENVIRONMENT) {
   println("====  - Terraform Plan ====")
+  ls -l
   sh "./tf-plan.sh \"${ENVIRONMENT}\" \"${params.RESOURCE_PATH}\" \"${params.ACTION}\""
 }
 
 def terraformApply(ENVIRONMENT) {
   println("==== Terraform Apply ====")
+  ls -l
   sh "./tf-apply.sh \"${ENVIRONMENT}\" \"${params.RESOURCE_PATH}\" \"${params.ACTION}\""
 }
 
