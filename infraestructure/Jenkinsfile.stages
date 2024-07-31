@@ -25,7 +25,7 @@ def terraformPlan(ENVIRONMENT) {
   sh 'pwd' // Mostrar el directorio actual
   sh 'ls -l' // Listar archivos y permisos
   sh """
-    cd infraestructure
+
     chmod +x infraestructure/tf-plan.sh
 
     ./tf-plan.sh "${ENVIRONMENT}" "${params.RESOURCE_PATH}" "${params.ACTION}"
@@ -37,7 +37,7 @@ def terraformApply(ENVIRONMENT) {
   sh 'pwd' // Mostrar el directorio actual
   sh 'ls -l' // Listar archivos y permisos
   sh """
-    cd infraestructure
+
     chmod +x infraestructure/tf-apply.sh
     ./tf-apply.sh "${ENVIRONMENT}" "${params.RESOURCE_PATH}" "${params.ACTION}"
   """
