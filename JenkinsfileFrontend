@@ -1,7 +1,7 @@
 
 pipeline {
 
-  agent any
+  agent {label 'macos-slave'}
   tools {nodejs "nodejs-18.16.0"}
 
   environment {
