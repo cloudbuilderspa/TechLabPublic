@@ -32,7 +32,7 @@ pipeline { //pipeline
       )
       choice(
           name: 'RESOURCE_PATH',
-          choices: ['dynamoDB','endpoints','bucket','cluster-aurora', 'proxy-aurora', 'rds','waf', 'tf-state', 'tf-state-cluster', 'tf-state-proxy', 'tf-state-waf','vpc'],
+          choices: ['dynamoDB','endpoints','bucket','cluster-aurora', 'proxy-aurora', 'rds','waf', 'tf-state','tf-state-rds', 'tf-state-cluster', 'tf-state-proxy', 'tf-state-waf','vpc'],
           description: 'Path del recurso al que se le aplicará la acción'
       )
     } //parameters end
