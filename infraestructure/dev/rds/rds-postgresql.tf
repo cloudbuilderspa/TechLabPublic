@@ -84,7 +84,7 @@ resource "aws_db_instance" "db-techlab-dev" {
   engine               = "postgres"
   engine_version       = "13.7"
   instance_class       = "db.t3.micro"
-  name                 = "techlab_database_1"
+  db_name                 = "techlab_database_1"
   username             = "techlab_admin" #
   password             = "ky" #fake value will replace with jenkins credentials
   parameter_group_name = "default.postgres13"
