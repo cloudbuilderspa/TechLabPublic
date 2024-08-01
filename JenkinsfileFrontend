@@ -15,7 +15,7 @@ pipeline {
     APP_NAME = "techlab-frontend"
     NPM_REGISTRY = "https://registry.npmjs.org/"
     //NPM_REGISTRY = "http://x.cl:8081/repository/npm-proxy/"
-    DIR_FRONT = "component"
+    DIR_FRONT = "frontend/component"
     DIR_DATADOME = "datadome"
     
 }
