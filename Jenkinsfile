@@ -102,7 +102,7 @@ pipeline { //pipeline
             println("sufix: ${sufix}")
             def techlab_DB_USER = getCredentialUsernamePassword("techlab_db_${sufix}").username
             def techlab_DB_SECRET = getCredentialUsernamePassword("techlab_db_${sufix}").password
-            sh """sed -i "s|ky|${techlab_DB_SECRET}|g" rds-postgresql.tf"""
+            sh """sed -i '' "s|ky|${techlab_DB_SECRET}|g" rds-postgresql.tf"""
             }
           }
         }
