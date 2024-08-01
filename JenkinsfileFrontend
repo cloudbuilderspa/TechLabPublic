@@ -1,0 +1,173 @@
+
+pipeline {
+
+  agent any
+  tools {nodejs "nodejs-18.16.0"}
+
+  environment {
+
+    utils = null
+    jenkinsfileStagesApi = null
+    jenkinsfileStagesFront = null
+    jenkinsfileStagesDeploy = null
+    jenkinsfilestagesDatadome = null
+
+    APP_NAME = "techlab-frontend"
+    NPM_REGISTRY = "https://registry.npmjs.org/"
+    //NPM_REGISTRY = "http://x.cl:8081/repository/npm-proxy/"
+    DIR_FRONT = "component"
+    DIR_DATADOME = "datadome"
+    
+}
+  
+  stages {
+
+    stage("Config") {
+      steps {
+        script {
+
+          BRANCH_NAME = env.GIT_BRANCH
+          LAST_STAGE_NAME = env.STAGE_NAME
+          ENVIRONMENT = getEnvironment()
+          VERSION_HASH = env.GIT_COMMIT
+          
+          println("APP_NAME: ${APP_NAME}")
+          println("BRANCH_NAME: ${BRANCH_NAME}, GIT_URL: ${env.GIT_URL}")    
+          println("ENVIRONMENT: ${ENVIRONMENT}")
+          println("VERSION_HASH: ${VERSION_HASH}")
+
+          utils = new Utilities(this)
+
+          // se cargan los stages del front
+          jenkinsfileStagesFront = loadJenkinStages(DIR_FRONT)
+
+          jenkinsfilestagesDatadome = loadJenkinStages(DIR_DATADOME)
+
+        }
+      }
+    } // stage("Config")
+
+    stage("Build"){
+          steps{
+            script{
+              dir(DIR_FRONT) {
+                jenkinsfileStagesFront.stageBuild(NPM_REGISTRY)
+              }
+            }
+          }
+    } // stage("Build")
+    
+
+    stage("Deploy"){
+      steps{
+        script{
+          dir(DIR_FRONT) {
+            jenkinsfileStagesFront.stageConfig(utils)
+            jenkinsfileStagesFront.stageDeploy(utils)
+            jenkinsfileStagesFront.stageInvalidatecache(ENVIRONMENT)
+          }
+        }
+      }
+    } // stage("Deploy")
+
+
+
+          
+  } // stages
+  
+
+
+} //pipeline
+
+def getEnvironment() {
+  def isJenkinsQa = env.JOB_URL.contains("/job/certificacion/")
+  def isJenkinsProd = env.JOB_URL.contains("/job/produccion/")
+  if (isJenkinsQa) {
+    return "qa"
+  } else if (isJenkinsProd) {
+    if (BRANCH_NAME.contains("master") || BRANCH_NAME.contains("release/delivery")) {
+      return "prod"
+    } else {
+      return "staging"
+    }
+  } else {
+    return "dev"
+  }
+}
+
+def loadJenkinStages(name) {
+  // se cargan los stages del api agenda
+  def jenkinsfileStages = null
+  try {
+    println("Cargando archivo: ${name}/Jenkinsfile.stages")
+    jenkinsfileStages = load "${name}/Jenkinsfile.stages"
+    
+  } catch(Exception ex) {
+    println(ex)
+    jenkinsfileStages = null
+  }
+  return jenkinsfileStages
+}
+
+class Utilities {
+
+  def steps
+
+  Utilities(steps) {
+    this.steps = steps
+  }
+
+  def getEnvironment() {
+    return this.steps.ENVIRONMENT
+  }
+
+  def getVersionHash() {
+    return this.steps.VERSION_HASH
+  }
+
+  def getCredentialString(String credentialsId) {
+    def variable = ""
+    this.steps.withCredentials([this.steps.string(credentialsId: credentialsId, variable: 'variableValue')]) {
+      variable = this.steps.variableValue
+    }
+    return variable
+  }
+
+  def getCredentialUsernamePassword(String credentialsId) {
+    def map = [
+      username: "",
+      password: ""
+    ]
+    this.steps.withCredentials([this.steps.usernamePassword(credentialsId: credentialsId, usernameVariable: 'usernameValue', passwordVariable: 'passwordValue')]) {
+      map.username = this.steps.usernameValue
+      map.password = this.steps.passwordValue
+    }
+    return map
+  }
+
+  def getCredentialAws(String credentialsId) {
+    def map = [
+      accessKey: "",
+      secretKey: ""
+    ]
+    this.steps.withCredentials([[
+      $class: 'AmazonWebServicesCredentialsBinding',
+      credentialsId: credentialsId, accessKeyVariable: 'accessKeyVariableValue', secretKeyVariable: 'secretKeyVariableValue'
+    ]]) {
+      map.accessKey = this.steps.accessKeyVariableValue
+      map.secretKey = this.steps.secretKeyVariableValue
+    }
+    return map
+  }
+
+  def createEnvFile(Map map, String destino) {
+  this.steps.println("==== createEnvFile ====")
+  def array = [];
+  for (entry in map) {
+    def s = (entry.value instanceof String) ? "$entry.key=$entry.value" : "$entry.key=$entry.value"
+    array.push(s)
+  }
+  def text = array.join("\n")
+  this.steps.writeFile file: destino, text: text
+  }
+}

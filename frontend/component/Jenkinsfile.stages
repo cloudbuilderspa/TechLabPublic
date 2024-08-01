@@ -1,0 +1,54 @@
+def AWS_CREDS
+def sufix
+def props
+def stageConfig(utils)
+{
+    println("==== FRONTEND - Configure Environment Properties & Credentials ====")
+
+    def ENVIRONMENT = utils.getEnvironment()
+    sufix = (ENVIRONMENT=="qa" || ENVIRONMENT=="staging") ? "cert" : ENVIRONMENT
+    AWS_CREDS = "jencme_aws_${sufix}"
+    // leyendo archivo de properties segun ambiente
+    PROP_FILE = "./environment/${ENVIRONMENT}.properties"
+    echo "Leyendo Properties: ${PROP_FILE}"
+    props = readProperties file: "${PROP_FILE}"
+    props["AWS_STAGE"] = ENVIRONMENT
+    // leyendo credenciales desde Jenkins
+    utils.createEnvFile(props, ".env")
+}
+
+def stageBuild(REGISTRY) {
+    println("==== Build Frontend - stageBuild ====")
+    sh "npm ci --loglevel=error --no-audit --no-optional --prefer-offline --registry ${REGISTRY} --verbose -d"
+}
+
+def stageTest() {
+  println("==== FRONT - stageTest ====")
+  sh "npm run test"
+}
+def stageDeploy(utils) {
+  sh "CI=false npm run build"
+  withAWS(credentials: "${AWS_CREDS}", region: "us-east-1") {
+    sh "npm run deploy"
+  }
+}
+
+def stageInvalidatecache(ENVIRONMENT) {
+  
+  println("==== Stage Invalidation Cache ====")
+  println("INVALIDATE CACHE IN CLOUDFRONT: ${ENVIRONMENT}")
+  def cloudfront_id = props['CLOUDFRONT_DISTRIBUTION']
+  withAWS(credentials: "${AWS_CREDS}", region: "us-east-1") {
+    sh "aws cloudfront create-invalidation --distribution-id ${cloudfront_id} --paths '/*'"
+  }
+}
+
+def stageSedDatadomeManifest(utils) {
+  def ENVIRONMENT = utils.getEnvironment()
+  println("==== Stage Invalidation Cache ====")
+  println("SED DATADOME: ${ENVIRONMENT}")
+  def cloudfront_id = props['CLOUDFRONT_DISTRIBUTION']
+  sh "sed -i 's|keyprocess|${cloudfront_id}|g' serverless.yaml"
+}
+
+return this
