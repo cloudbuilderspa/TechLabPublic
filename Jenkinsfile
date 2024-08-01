@@ -82,31 +82,31 @@ pipeline { //pipeline
         }
       }
     }
-    // stage('CHMOD'){
-    // steps{
-    //   script{
-    //     dir(infraestructure){
-    //     sh 'chmod +x tf-apply.sh'
-    //     sh 'chmod +x tf-plan.sh'
-    //     }
-    //   }
-    // }
-    // }
+    stage('CHMOD'){
+    steps{
+      script{
+        dir(infraestructure){
+        sh 'chmod +x tf-apply.sh'
+        sh 'chmod +x tf-plan.sh'
+        }
+      }
+    }
+    }
 
-      // stage('DB AWS ENV') {
-      //   steps{
-      //     script {
-      //       def folder = INFRAESTRUCTURE +"/"+ ENVIRONMENT +"/rds"
-      //       dir(folder) {
-      //       def sufix = ENVIRONMENT == 'qa' ? 'cert' : ENVIRONMENT;
-      //       println("sufix: ${sufix}")
-      //       def techlab_DB_USER = getCredentialUsernamePassword("techlab_db_${sufix}").username
-      //       def techlab_DB_SECRET = getCredentialUsernamePassword("techlab_db_${sufix}").password
-      //       sh """sed -i "s|ky|${techlab_DB_SECRET}|g" rds-postgresql.tf"""
-      //       }
-      //     }
-      //   }
-      // }
+      stage('DB AWS ENV') {
+        steps{
+          script {
+            def folder = INFRAESTRUCTURE +"/"+ ENVIRONMENT +"/rds"
+            dir(folder) {
+            def sufix = ENVIRONMENT == 'qa' ? 'cert' : ENVIRONMENT;
+            println("sufix: ${sufix}")
+            def techlab_DB_USER = getCredentialUsernamePassword("techlab_db_${sufix}").username
+            def techlab_DB_SECRET = getCredentialUsernamePassword("techlab_db_${sufix}").password
+            sh """sed -i "s|ky|${techlab_DB_SECRET}|g" rds-postgresql.tf"""
+            }
+          }
+        }
+      }
 
       stage("Terraform Plan") {
         when {
